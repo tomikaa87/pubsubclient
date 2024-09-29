@@ -705,7 +705,7 @@ PubSubClient& PubSubClient::setServer(const char* domain, const uint16_t port)
 
 PubSubClient& PubSubClient::setCallback(Callback callback)
 {
-    callback = std::move(callback);
+    _callback = std::move(callback);
     return *this;
 }
 
