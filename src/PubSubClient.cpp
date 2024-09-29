@@ -17,30 +17,28 @@ PubSubClient::PubSubClient(Client& client)
 
 PubSubClient::PubSubClient(IPAddress addr, uint16_t port, Client& client)
     : _client{ client }
+    , _ip{ addr }
+    , _port{ port }
 {
-    setServer(addr, port);
 }
 
 PubSubClient::PubSubClient(IPAddress addr, uint16_t port, Client& client, Stream& stream)
-    : _client{ client }
+    : PubSubClient{ addr, port, client }
 {
-    setServer(addr, port);
-    setStream(stream);
+    _stream = &stream;
 }
 
 PubSubClient::PubSubClient(IPAddress addr, uint16_t port, Callback callback, Client& client)
-    : _client{ client }
+    : PubSubClient{ addr, port, client }
 {
-    setServer(addr, port);
-    setCallback(callback);
+    _callback = std::move(callback);
 }
 
 PubSubClient::PubSubClient(IPAddress addr, uint16_t port, Callback callback, Client& client, Stream& stream)
-    : _client{ client }
+    : PubSubClient{ addr, port, client }
 {
-    setServer(addr, port);
-    setCallback(callback);
-    setStream(stream);
+    _stream = &stream;
+    _callback = std::move(callback);
 }
 
 PubSubClient::PubSubClient(uint8_t* ip, uint16_t port, Client& client)
