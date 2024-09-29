@@ -79,8 +79,6 @@
 // Maximum size of fixed header and variable length size header
 #define MQTT_MAX_HEADER_SIZE 5
 
-#define CHECK_STRING_LENGTH(l,s) if (l+2+strnlen(s, sizeof(_buffer)) > sizeof(_buffer)) {_client.stop();return false;}
-
 class PubSubClient
 {
 public:
@@ -97,10 +95,12 @@ public:
     PubSubClient(IPAddress, uint16_t, Client& client, Stream&);
     PubSubClient(IPAddress, uint16_t, Callback callback, Client& client);
     PubSubClient(IPAddress, uint16_t, Callback callback, Client& client, Stream&);
+
     PubSubClient(uint8_t*, uint16_t, Client& client);
     PubSubClient(uint8_t*, uint16_t, Client& client, Stream&);
     PubSubClient(uint8_t*, uint16_t, Callback callback, Client& client);
     PubSubClient(uint8_t*, uint16_t, Callback callback, Client& client, Stream&);
+
     PubSubClient(const char*, uint16_t, Client& client);
     PubSubClient(const char*, uint16_t, Client& client, Stream&);
     PubSubClient(const char*, uint16_t, Callback callback, Client& client);
@@ -172,21 +172,23 @@ private:
     uint16_t _nextMsgId{};
     unsigned long _lastOutActivity{};
     unsigned long _lastInActivity{};
-    bool pingOutstanding{};
+    bool _pingOutstanding{};
     Callback _callback{};
-    uint32_t readPacket(uint8_t*);
-    bool readByte(uint8_t* result);
-    bool readByte(uint8_t* result, uint16_t* index);
-    bool write(uint8_t header, uint8_t* buf, uint16_t length);
-    uint16_t writeString(const char* string, uint8_t* buf, uint16_t pos);
-    // Build up the header ready to send
-    // Returns the size of the header
-    // Note: the header is built at the end of the first MQTT_MAX_HEADER_SIZE bytes, so will start
-    //       (MQTT_MAX_HEADER_SIZE - <returned size>) bytes into the buffer
-    size_t buildHeader(uint8_t header, uint8_t* buf, uint16_t length);
     IPAddress _ip;
     const char* _domain{};
     uint16_t _port{};
     Stream* _stream{};
     int _state{ MQTT_DISCONNECTED };
+
+    uint32_t readPacket(uint8_t*);
+    bool readByte(uint8_t* result);
+    bool readByte(uint8_t* result, uint16_t* index);
+    bool write(uint8_t header, uint8_t* buf, uint16_t length);
+    uint16_t writeString(const char* string, uint8_t* buf, uint16_t pos);
+
+    // Build up the header ready to send
+    // Returns the size of the header
+    // Note: the header is built at the end of the first MQTT_MAX_HEADER_SIZE bytes, so will start
+    //       (MQTT_MAX_HEADER_SIZE - <returned size>) bytes into the buffer
+    size_t buildHeader(uint8_t header, uint8_t* buf, uint16_t length);
 };
